@@ -23,8 +23,7 @@ hng-todo-app/
   pyproject.toml      # uv deps (flask, flask-wtf, python-dotenv; dev: pytest, ruff)
   uv.lock             # locked by uv, do not hand-edit
   requirements.txt    # exported for Vercel ONLY — regen on dep change, do not add manually
-  .python-version     # pinned python for uv
-  vercel.json         # rewrites all routes to app.py
+  .python-version     # pinned python for uv (3.14, supported by Vercel)
   .env.example        # SECRET_KEY=, TODO_DB_PATH= (copy to .env locally)
   .gitignore          # venv, __pycache__, *.db, .env, .vercel/
   app.py              # Flask app, routes, exposes `app`, calls init_db() on startup
@@ -64,7 +63,10 @@ uv export --format requirements-txt --no-hashes > requirements.txt
 vercel --prod               # from repo root; set SECRET_KEY in Vercel env dashboard
 ```
 
-Vercel entry: `app.py` must expose module-level `app`. `vercel.json` rewrites `/(.*)` to `/app.py`.
+Vercel entry: `app.py` must expose module-level `app`. No `vercel.json` needed —
+Vercel zero-config Flask detection routes all traffic to it. (A `/(.*)` →
+`/app.py` rewrite breaks routing: the app receives `/app.py` as the path and
+Flask 404s. Do not re-add it.)
 
 ## DB contract (`db.py` — swap-safe)
 
@@ -118,7 +120,7 @@ Don't:
 ## Task checklist
 
 - [x] Plan approved (sqlite3 + Flask-WTF + pytest/ruff + uv)
-- [ ] Scaffold: pyproject, uv.lock, requirements.txt, vercel.json, .gitignore, .env.example
+- [ ] Scaffold: pyproject, uv.lock, requirements.txt, .gitignore, .env.example
 - [ ] `db.py` done + covered by `tests/test_db.py`
 - [ ] `forms.py` + `app.py` routes done
 - [ ] Templates + CSS done, responsive + empty/error states
