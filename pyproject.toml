@@ -1,0 +1,28 @@
+[project]
+name = "hng-todo-app"
+version = "0.1.0"
+description = "Simple Flask to-do app (internship task)"
+readme = "AGENTS.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.1",
+    "flask-wtf>=1.2",
+    "python-dotenv>=1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2 class="edit-title">Edit task</h2>
+  <form class="edit-row" action="{{ url_for('edit', task_id=task['id']) }}" method="post" novalidate>
+    {{ form.csrf_token }}
+    <label class="field-label" for="title">Task title</label>
+    {{ form.title(id="title", maxlength="200") }}
+    {% if form.title.errors %}
+      <p class="field-error">{{ form.title.errors[0] }}</p>
+    {% endif %}
+    <div class="edit-actions">
+      <button class="btn btn-primary" type="submit">Save</button>
+      <a class="btn btn-ghost" href="{{ url_for('index') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

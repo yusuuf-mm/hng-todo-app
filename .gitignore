@@ -1,0 +1,19 @@
+# venv / uv
+.venv/
+venv/
+
+# python cache
+__pycache__/
+*.pyc
+
+# local db + env
+*.db
+*.db-journal
+.env
+
+# vercel
+.vercel/
+
+# pytest / ruff
+.pytest_cache/
+.ruff_cache/

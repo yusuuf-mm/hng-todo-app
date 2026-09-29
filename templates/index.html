@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <form class="add-row" action="{{ url_for('add') }}" method="post" novalidate>
+    {{ form.csrf_token }}
+    <label class="field-label" for="title">New task</label>
+    {{ form.title(id="title", placeholder="Buy milk, call the bank...", maxlength="200", autocomplete="off") }}
+    <button class="btn btn-primary" type="submit">Add</button>
+  </form>
+  {% if form.title.errors %}
+    <p class="field-error">{{ form.title.errors[0] }}</p>
+  {% endif %}
+</section>
+
+<nav class="tabs" aria-label="Filter tasks">
+  <a class="tab tab-all {% if current == 'all' %}is-active{% endif %}" href="{{ url_for('index', filter='all') }}">All <span class="badge">{{ counts.total }}</span></a>
+  <a class="tab tab-active {% if current == 'active' %}is-active{% endif %}" href="{{ url_for('index', filter='active') }}">Active <span class="badge badge-amber">{{ counts.active }}</span></a>
+  <a class="tab tab-done {% if current == 'completed' %}is-active{% endif %}" href="{{ url_for('index', filter='completed') }}">Done <span class="badge badge-green">{{ counts.completed }}</span></a>
+</nav>
+
+<section class="card list-card">
+  {% if tasks %}
+    <ul class="task-list">
+      {% for task in tasks %}
+      <li class="task {% if task['done'] %}is-done{% endif %}" style="--index: {{ loop.index0 }}">
+        <form action="{{ url_for('toggle', task_id=task['id'], filter=current) }}" method="post">
+          {{ form.csrf_token }}
+          <button class="check" type="submit" aria-label="Mark {{ task['title'] }} as {% if task['done'] %}active{% else %}done{% endif %}">
+            <span class="box" aria-hidden="true">{% if task['done'] %}&#10003;{% endif %}</span>
+          </button>
+        </form>
+        <span class="task-title">{{ task['title'] }}</span>
+        <span class="task-actions">
+          <a class="btn btn-ghost" href="{{ url_for('edit', task_id=task['id']) }}">Edit</a>
+          <form action="{{ url_for('delete', task_id=task['id'], filter=current) }}" method="post">
+            {{ form.csrf_token }}
+            <button class="btn btn-ghost btn-danger" type="submit">Delete</button>
+          </form>
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% if counts.completed and current != 'active' %}
+    <form class="clear-row" action="{{ url_for('clear_completed') }}" method="post">
+      {{ form.csrf_token }}
+      <button class="btn btn-ghost" type="submit">Clear {{ counts.completed }} completed</button>
+    </form>
+    {% endif %}
+  {% else %}
+    <div class="empty">
+      {% if current == 'active' %}
+        <h2>Nothing left to do</h2>
+        <p>Every task is done. Add the next one above.</p>
+      {% elif current == 'completed' %}
+        <h2>No finished tasks yet</h2>
+        <p>Tick a task off and it will show up here.</p>
+      {% else %}
+        <h2>No tasks yet</h2>
+        <p>Add your first task above to get started.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
